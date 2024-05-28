@@ -1,22 +1,81 @@
-importar { Terminal } desde '@es-js/terminal'
+import { Terminal } from "@es-js/terminal"
+import { obtenerJson } from "https://desarrollo-aplicaciones.vercel.app/2024/code/obtener-json.js"
+import { validarSecreto } from "https://desarrollo-aplicaciones.vercel.app/2024/code/validar-secreto.js"
 
-asincrono funcion inicio() {
-	Terminal.limpiar()
 
-	Terminal.escribir('Ingresa un valor:')
+var titulo = document.createElement("h1");
 
-	const resultado = esperar Terminal.leer()
+// Establecer el texto del título
+titulo.textContent = "PRECIO DEL DÓLAR BLUE";
 
-	Terminal.escribir({
-		Resultado: resultado,
-		Tipo: tipoDe resultado,
-	})
+// Añadir el título al cuerpo del documento
+document.body.appendChild(titulo);
 
-	Terminal.escribir('Presiona ENTER para volver a iniciar')
 
-	esperar Terminal.leerEnter()
+async function inicio() {
+  saludo()
+  Terminal.log("Hola! Ingresa la palabra secreta:")
 
-	esperar inicio()
+  var secreto = await Terminal.leer()
+
+  var dni = "42706292" // Ingresa tu DNI aquí 👈
+
+  if (await validarSecreto(dni, secreto)) {
+    console.log("Ingreso con exito señor Romero")
+    Terminal.log("*".repeat(50))
+    await mostrarCotizacion()
+    
+    
+  } else {
+    Terminal.log("Palabra secreta inválida")
+  }
+
+  Terminal.log("Presiona ENTER para volver a ingresar")
+
+  await Terminal.leerEnter()
+
+  Terminal.clear()
+
+  inicio()
 }
+
+function saludo(){
+  
+  
+}
+
+async function mostrarCotizacion() {
+  try {
+    const dolarBlue = await obtenerJson('https://dolarapi.com/v1/dolares/blue');
+    
+    let fechaFormateada = formatearFecha(dolarBlue.fechaActualizacion);
+
+    Terminal.log("Tipo de moneda: " + dolarBlue.moneda);
+    Terminal.log("Nombre: " + dolarBlue.nombre);
+    Terminal.log("Precio dolar venta: " + dolarBlue.venta);
+    Terminal.log("Precio dolar compra: " + dolarBlue.compra);
+    Terminal.log("Fecha de actualización: " + fechaFormateada);
+  } catch (error) {
+    console.error("Error al obtener la cotización del dólar Blue:", error);
+  }
+}
+
+function formatearFecha(fechaISO) {
+  
+  let fecha = new Date(fechaISO);
+
+  let dia = fecha.getDate();
+  let mes = fecha.getMonth() + 1; 
+  let anio = fecha.getFullYear();
+
+  if (dia < 10) dia = '0' + dia;
+  if (mes < 10) mes = '0' + mes;
+
+  return dia + '/' + mes + '/' + anio;
+}
+
+
+
+
 
 inicio()
